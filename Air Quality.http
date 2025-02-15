@@ -1,0 +1,2 @@
+GET localhost:8000/api/usuarioCaracteristicas
+Accept: application/json
