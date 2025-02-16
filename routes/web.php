@@ -27,12 +27,15 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->get('/ponentes/crea
 
 })->name('ponentes.crear');
 
+
 Route::middleware(['auth', RoleMiddleware::class. ':admin'])->get('/ponentes/{id}/editar', function ($id) {
     return view('ponentes.editar', ['id' => $id]);
 
 })->name('ponentes.editar');
 
-
+Route::get('/eventos', function () {
+    return view('eventos.show');
+})->name('eventos.show');
 
 
 require __DIR__.'/auth.php';

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\EventosController;
 use App\Http\Controllers\Api\PonentesController;
 use App\Http\Controllers\Api\UsuarioCaracteristicasController;
 use Illuminate\Http\Request;
@@ -13,6 +14,8 @@ Route::get('/usuarioCaracteristicas', [UsuarioCaracteristicasController::class, 
 
 Route::get('/ponentes', [PonentesController::class, 'index']);
 Route::post('/ponentes', [PonentesController::class, 'store']);
-Route::get('/ponentes/{id}', [PonentesController::class, 'show']);
 Route::put('/ponentes/{id}', [PonentesController::class, 'update']);
 Route::delete('/ponentes/{id}', [PonentesController::class, 'destroy']);
+
+Route::get('/eventos', [EventosController::class, 'index']);
+Route::post('/eventos', [EventosController::class, 'store']);

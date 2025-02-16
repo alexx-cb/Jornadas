@@ -21,3 +21,23 @@ Content-Type: application/json
     "areas_experiencia": "C++",
     "redes_sociales": "https://www.instagram.com/"
 }
+
+###
+GET localhost:8000/api/eventos
+Accept: application/json
+
+###
+POST localhost:8000/api/eventos
+Accept: application/json
+Content-Type: application/json
+
+{
+    "nombre": "Taller de PHP",
+    "descripcion": "programacion de jornadas estudiantiles",
+    "ponente_id": 6,
+    "tipo_evento": "Taller",
+    "dia": "Viernes",
+    "hora_inicio": "10:00",
+    "cupo_maximo": 50,
+    "cupo_actual": 0
+}
