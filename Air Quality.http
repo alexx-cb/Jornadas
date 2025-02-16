@@ -1,2 +1,18 @@
 GET localhost:8000/api/usuarioCaracteristicas
 Accept: application/json
+
+###
+POST localhost:8000/api/ponentes
+Accept: application/json
+Content-Type: application/json
+
+{
+    "nombre": "Fernando Alonso",
+    "fotografia": "alonso2.jpg",
+    "areas_experiencia": "PHP",
+    "redes_sociales": "https://www.instagram.com/"
+}
+
+###
+GET localhost:8000/api/ponentes
+Accept: application/json
