@@ -12,22 +12,22 @@
                     @csrf
                     <div class="mb-4">
                         <label for="nombre" class="block text-gray-700">Nombre del Ponente</label>
-                        <input type="text" id="nombre" name="nombre" class="mt-1 block w-full">
+                        <input type="text" id="nombre" name="nombre" class="mt-1 block w-full" required>
                     </div>
 
                     <div class="mb-4">
                         <label for="fotografia" class="block text-gray-700">Fotografía</label>
-                        <input type="file" id="fotografia" name="fotografia" class="mt-1 block w-full" accept="image/*">
+                        <input type="file" id="fotografia" name="fotografia" class="mt-1 block w-full" accept="image/*" required>
                     </div>
 
                     <div class="mb-4">
                         <label for="areas_experiencia" class="block text-gray-700">Áreas de Experiencia</label>
-                        <input type="text" id="areas_experiencia" name="areas_experiencia" class="mt-1 block w-full">
+                        <input type="text" id="areas_experiencia" name="areas_experiencia" class="mt-1 block w-full" required>
                     </div>
 
                     <div class="mb-4">
                         <label for="redes_sociales" class="block text-gray-700">Redes Sociales (URL)</label>
-                        <input type="text" id="redes_sociales" name="redes_sociales" class="mt-1 block w-full">
+                        <input type="text" id="redes_sociales" name="redes_sociales" class="mt-1 block w-full" required>
                     </div>
 
                     <div class="flex justify-end">

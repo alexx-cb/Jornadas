@@ -16,6 +16,6 @@ class RoleMiddleware
         }
 
         // Si no tiene el rol adecuado, redirige a otra página o muestra un mensaje de error
-        return redirect()->route('home')->with('error', 'No tienes permiso para acceder a esta página');
+        return redirect()->route('dashboard')->with('error', 'No tienes permiso para acceder a esta página');
     }
 }

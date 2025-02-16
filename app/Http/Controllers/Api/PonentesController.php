@@ -35,7 +35,7 @@ class PonentesController extends Controller
         // Validar los datos
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|min:3|max:100',
-            'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048', // Validar imagen
+            'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'areas_experiencia' => 'required|string|min:3|max:255',
             'redes_sociales' => 'required|string|min:5|max:255',
         ]);
@@ -89,47 +89,66 @@ class PonentesController extends Controller
     }
 
     public function update(Request $request, $id){
+        // Buscar el ponente
         $ponente = Ponentes::find($id);
-
-        if(!$ponente){
-            $data = [
-                'mensaje' => 'No se ha podido obtener ponente',
+        if (!$ponente) {
+            return response()->json([
+                'mensaje' => 'Ponente no encontrado',
                 'status' => 404
-            ];
-            return response()->json($data, 404);
+            ], 404);
         }
 
 
+
+        // Validación de los datos del formulario
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|min:3|max:100',
-            'fotografia' => 'required|string|min:5|max:100',
-            'areas_experiencia' => 'required|string|min:3|max:100',
-            'redes_sociales' => 'required|string',
+            'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'areas_experiencia' => 'required|string|min:3|max:255',
+            'redes_sociales' => 'required|string|min:5|max:255',
         ]);
 
-        if($validator->fails()){
-            $data = [
-                'mensaje' => 'Error en la validacion de los datos',
-                'error' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
+        // Validación fallida
+        if ($validator->fails()) {
+            return response()->json([
+                'mensaje' => 'Error en la validación',
+                'errores' => $validator->errors()
+            ], 400);
         }
 
-        $ponente->nombre = $request->input('nombre');
-        $ponente->fotografia = $request->input('fotografia');
-        $ponente->areas_experiencia = $request->input('areas_experiencia');
-        $ponente->redes_sociales = $request->input('redes_sociales');
+        // Actualizar los datos del ponente
+        $ponente->nombre = $request->nombre;
+        $ponente->areas_experiencia = $request->areas_experiencia;
+        $ponente->redes_sociales = $request->redes_sociales;
+
+        // Manejo de la fotografía (si se envía un nuevo archivo)
+        if ($request->hasFile('fotografia')) {
+            // Eliminar la fotografía anterior si existe
+            if ($ponente->fotografia && file_exists(public_path('img/' . $ponente->fotografia))) {
+                unlink(public_path('img/' . $ponente->fotografia));
+            }
+
+            // Subir la nueva fotografía
+            $fotografia = $request->file('fotografia');
+            $fotografiaPath = 'img/' . uniqid('', true) . '.' . $fotografia->getClientOriginalExtension();
+            $fotografia->move(public_path('img'), $fotografiaPath);
+
+            // Asignar la nueva fotografía al ponente
+            $ponente->fotografia = $fotografiaPath;
+        }
+
+        // Guardar los cambios
         $ponente->save();
 
-        $data = [
+        // Responder con el estado y los datos actualizados
+        return response()->json([
             'mensaje' => 'Ponente actualizado correctamente',
             'ponente' => $ponente,
             'status' => 200
-        ];
-        return response()->json($data, 200);
-
+        ], 200);
     }
+
+
 
     public function destroy($id){
         $ponente = Ponentes::find($id);

@@ -13,5 +13,6 @@ Route::get('/usuarioCaracteristicas', [UsuarioCaracteristicasController::class, 
 
 Route::get('/ponentes', [PonentesController::class, 'index']);
 Route::post('/ponentes', [PonentesController::class, 'store']);
-
+Route::get('/ponentes/{id}', [PonentesController::class, 'show']);
+Route::put('/ponentes/{id}', [PonentesController::class, 'update']);
 Route::delete('/ponentes/{id}', [PonentesController::class, 'destroy']);

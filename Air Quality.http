@@ -7,5 +7,17 @@ GET localhost:8000/api/ponentes
 Accept: application/json
 
 ###
-DELETE localhost:8000/api/ponentes/4
+GET localhost:8000/api/ponentes/6
 Accept: application/json
+
+###
+PUT localhost:8000/api/ponentes/5
+Accept: application/json
+Content-Type: application/json
+
+{
+    "nombre": "Cambio Put",
+    "fotografia" : "67b1d9e55cf012.53497960.webp",
+    "areas_experiencia": "C++",
+    "redes_sociales": "https://www.instagram.com/"
+}
