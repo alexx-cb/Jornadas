@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,5 +21,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/ponentes', function () {
     return view('ponentes.show');
 })->name('ponentes.show');
+
+Route::middleware(['auth', RoleMiddleware::class.':admin'])->get('/ponentes/crear', function () {
+    return view('ponentes.crear');
+
+})->name('ponentes.crear');
 
 require __DIR__.'/auth.php';

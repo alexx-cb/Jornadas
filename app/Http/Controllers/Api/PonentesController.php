@@ -30,28 +30,44 @@ class PonentesController extends Controller
 
     }
 
-    public function store(Request $request){
-        $ponente = Ponentes::create([
-            'nombre' => $request->nombre,
-            'fotografia' => $request->fotografia,
-            'areas_experiencia' => $request->areas_experiencia,
-            'redes_sociales' => $request->redes_sociales
+    public function store(Request $request)
+    {
+        // Validar los datos
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|string|min:3|max:100',
+            'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048', // Validar imagen
+            'areas_experiencia' => 'required|string|min:3|max:255',
+            'redes_sociales' => 'required|string|min:5|max:255',
         ]);
 
-        if(!$ponente){
-            $data = [
-                'mensaje' => 'No se ha podido crear ponente',
-                'status' => 500
-            ];
-            return response()->json($data, 500);
+        if ($validator->fails()) {
+            return response()->json([
+                'mensaje' => 'Error en los datos enviados',
+                'errores' => $validator->errors()
+            ], 400);
         }
-        $data = [
+
+        // Subir la imagen a la carpeta public/img
+        $fotografia = $request->file('fotografia');
+
+        // Generar un nombre único para la imagen y moverla al directorio public/img
+        $fotografiaPath = 'img/' . uniqid('', true) . '.' . $fotografia->getClientOriginalExtension();
+        $fotografia->move(public_path('img'), $fotografiaPath);
+
+        // Crear el ponente
+        $ponente = Ponentes::create([
+            'nombre' => $request->nombre,
+            'fotografia' => $fotografiaPath, // Guardamos la ruta de la imagen
+            'areas_experiencia' => $request->areas_experiencia,
+            'redes_sociales' => $request->redes_sociales,
+        ]);
+
+        return response()->json([
             'mensaje' => 'Ponente creado correctamente',
-            'ponentes' => $ponente,
-            'status' => 200
-        ];
-        return response()->json($data, 200);
+            'ponente' => $ponente
+        ], 200);
     }
+
 
     public function show($id){
 

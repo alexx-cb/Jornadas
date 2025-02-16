@@ -13,3 +13,5 @@ Route::get('/usuarioCaracteristicas', [UsuarioCaracteristicasController::class, 
 
 Route::get('/ponentes', [PonentesController::class, 'index']);
 Route::post('/ponentes', [PonentesController::class, 'store']);
+
+Route::delete('/ponentes/{id}', [PonentesController::class, 'destroy']);

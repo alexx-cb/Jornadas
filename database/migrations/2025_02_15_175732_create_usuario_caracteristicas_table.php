@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('email');
             $table->integer('tipo_inscripcion')->default(1);
             $table->boolean('estudiante')->default(false);
-            $table->string('rol')->default('usuario');
             $table->timestamps();
         });
     }
