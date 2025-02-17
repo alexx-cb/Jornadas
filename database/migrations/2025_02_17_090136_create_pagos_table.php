@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
+            $table->string('user_id')->unique()->constrained();
+            $table->string('tipo_pago');
+            $table->string('cantidad');
+            $table->dateTime('fecha_pago');
+            $table->string('estado')->default('Pendiente')->enum('Pendiente', 'Completado');
             $table->timestamps();
         });
     }
