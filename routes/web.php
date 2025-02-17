@@ -8,6 +8,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/tipoInscripcion', function () {
+    return view('inscripciones.tipoInscripcion');
+})->middleware(['auth', 'verified'])->name('inscripciones.tipoInscripcion');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -38,5 +45,8 @@ Route::get('/eventos', function () {
 Route::middleware(['auth', RoleMiddleware::class. ':admin'])->get('/eventos/crear', function () {
     return view('eventos.crear');
 })->name('eventos.crear');
+
+
+
 
 require __DIR__.'/auth.php';

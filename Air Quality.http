@@ -50,3 +50,17 @@ Content-Type: application/json
 {
     "email": "alejandrocabrerabarea@gmail.com"
 }
+
+###
+GET localhost:8000/api/estudiantes
+Accept: application/json
+
+###
+PATCH localhost:8000/api/usuarioCaracteristicas/10
+Accept: application/json
+Content-Type: application/json
+
+{
+    "estudiante": false,
+    "tipo_inscripcion": 2
+}

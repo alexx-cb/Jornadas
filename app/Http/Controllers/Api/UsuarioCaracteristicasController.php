@@ -67,5 +67,42 @@ class UsuarioCaracteristicasController extends Controller
         return response()->json($data, 200);
     }
 
+    public function updatePartial(Request $request, $id){
+        $usuario = UsuarioCaracteristicas::find($id);
+
+        if(!$usuario){
+            $data = [
+                'mensaje' => 'Usuario no encontrado',
+                'status' => '404',
+            ];
+            return response()->json($data, 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'estudiante' => 'boolean',
+            'tipo_inscripcion' => 'integer',
+        ]);
+
+        if($validator->fails()){
+            $data = [
+                'mensaje' => 'Error en la validacion',
+                'errors' => $validator->errors(),
+                'status' => '400',
+            ];
+            return response()->json($data, 400);
+        }
+
+        $usuario->estudiante = $request->input('estudiante');
+        $usuario->tipo_inscripcion = $request->input('tipo_inscripcion');
+
+        $usuario->save();
+
+        $data = [
+            'mensaje' => 'Usuario actualizado con exito',
+            'usuario' => $usuario,
+            'status' => '200',
+        ];
+        return response()->json($data, 200);
+    }
 
 }

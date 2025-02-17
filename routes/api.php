@@ -12,6 +12,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/usuarioCaracteristicas', [UsuarioCaracteristicasController::class, 'index']);
+Route::patch('/usuarioCaracteristicas/{id}', [UsuarioCaracteristicasController::class, 'updatePartial']);
 
 Route::get('/ponentes', [PonentesController::class, 'index']);
 Route::post('/ponentes', [PonentesController::class, 'store']);
