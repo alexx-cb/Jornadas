@@ -53,6 +53,7 @@ class EventosController extends Controller
         $validacion = Validator::make($request->all(), [
             'nombre' => 'required|max:255',
             'descripcion' => 'required|max:255',
+            'tipo_evento' => 'required|in:Taller,Conferencia',
             'ponente_id' => 'required|exists:ponentes,id',
             'dia' => 'required|string|in:Jueves,Viernes',
             'hora_inicio' => 'required|date_format:H:i',
@@ -99,7 +100,7 @@ class EventosController extends Controller
 
         if (!$validacionSolapamiento) {
             $data = [
-                'mensaje' => 'Ya hay un evento del mismo tipo programado',
+                'mensaje' => 'Ya hay un evento del mismo tipo programado a la misma hora',
                 'status' => 200
             ];
             return response()->json($data, 200);
@@ -126,5 +127,26 @@ class EventosController extends Controller
         return response()->json($data, 200);
     }
 
+
+    public function destroy($id){
+
+        $evento = Eventos::find($id);
+
+        if(!$evento){
+            $data = [
+                'mensaje' => 'No se ha podido obtener ponente',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $evento->delete();
+
+        $data = [
+            'mensaje' => 'Ponente eliminado correctamente',
+            'ponente' => $evento,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 
 }

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PonentesController extends Controller
 {
-    //
 
     public function index(){
         $ponentes = Ponentes::all();
@@ -57,7 +56,7 @@ class PonentesController extends Controller
         // Crear el ponente
         $ponente = Ponentes::create([
             'nombre' => $request->nombre,
-            'fotografia' => $fotografiaPath, // Guardamos la ruta de la imagen
+            'fotografia' => $fotografiaPath,
             'areas_experiencia' => $request->areas_experiencia,
             'redes_sociales' => $request->redes_sociales,
         ]);
@@ -147,8 +146,6 @@ class PonentesController extends Controller
             'status' => 200
         ], 200);
     }
-
-
 
     public function destroy($id){
         $ponente = Ponentes::find($id);

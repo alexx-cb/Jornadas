@@ -20,15 +20,6 @@ class Eventos extends Model
         'cupo_actual',
     ];
 
-    // Cálculo automático de 'hora_fin' (55 minutos después de 'hora_inicio')
-    public function setHoraInicioAttribute($value)
-    {
-        $this->attributes['hora_inicio'] = $value;
-
-        // Calcular 'hora_fin' como 55 minutos después de 'hora_inicio'
-        $horaInicio = Carbon::createFromFormat('H:i', $value);
-        $this->attributes['hora_fin'] = $horaInicio->addMinutes(55)->format('H:i');
-    }
 
     // Validar si el evento ya existe (para un ponente en un día y hora específicos)
     public static function validarEventoUnico($ponente_id, $dia, $hora_inicio): bool

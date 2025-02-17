@@ -38,4 +38,8 @@ Route::get('/eventos', function () {
 })->name('eventos.show');
 
 
+Route::middleware(['auth', RoleMiddleware::class. ':admin'])->get('/eventos/crear', function () {
+    return view('eventos.crear');
+})->name('eventos.crear');
+
 require __DIR__.'/auth.php';

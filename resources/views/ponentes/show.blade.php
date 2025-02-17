@@ -30,7 +30,7 @@
                 .then(data => {
                     if (data.ponentes && Array.isArray(data.ponentes)) {
                         const container = document.getElementById("ponentesContainer");
-                        container.innerHTML = ''; // Limpiar el contenedor primero
+                        container.innerHTML = '';
 
                         data.ponentes.forEach(ponente => {
                             const imageUrl = `/${ponente.fotografia.replace(/\\/g, '/')}`;
@@ -74,7 +74,6 @@
                     .then(data => {
                         if (data.status === 200) {
                             alert('Ponente eliminado correctamente');
-                            // Recargar la página para actualizar la lista
                             window.location.reload();
                         } else {
                             alert('Error al eliminar el ponente: ' + (data.mensaje || 'Error desconocido'));

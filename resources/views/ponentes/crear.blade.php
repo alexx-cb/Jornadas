@@ -73,6 +73,7 @@
                 .then(data => {
                     if (data.status === 200) {
                         document.getElementById('responseMessage').textContent = 'Ponente creado correctamente.';
+                        window.location.href = '/ponentes'
                         document.getElementById('responseMessage').classList.remove('hidden');
                         document.getElementById('errorMessage').classList.add('hidden');
                     } else {
