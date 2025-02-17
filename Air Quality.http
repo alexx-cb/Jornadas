@@ -41,3 +41,12 @@ Content-Type: application/json
     "cupo_maximo": 50,
     "cupo_actual": 0
 }
+
+###
+POST localhost:8000/api/estudiantes
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "alejandrocabrerabarea@gmail.com"
+}

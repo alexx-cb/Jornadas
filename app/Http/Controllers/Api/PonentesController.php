@@ -29,9 +29,9 @@ class PonentesController extends Controller
 
     }
 
-    public function store(Request $request)
-    {
-        // Validar los datos
+    public function store(Request $request){
+
+
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|min:3|max:100',
             'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
@@ -61,10 +61,12 @@ class PonentesController extends Controller
             'redes_sociales' => $request->redes_sociales,
         ]);
 
-        return response()->json([
-            'mensaje' => 'Ponente creado correctamente',
-            'ponente' => $ponente
-        ], 200);
+        $data = [
+            'mensaje' => 'Se ha registrado un nuevo ponente',
+            'ponente' => $ponente,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
     }
 
 
@@ -91,15 +93,13 @@ class PonentesController extends Controller
         // Buscar el ponente
         $ponente = Ponentes::find($id);
         if (!$ponente) {
-            return response()->json([
-                'mensaje' => 'Ponente no encontrado',
+            $data = [
+                'mensaje' => 'No se ha podido obtener ponente',
                 'status' => 404
-            ], 404);
+            ];
+            return response()->json($data, 404);
         }
 
-
-
-        // Validación de los datos del formulario
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|min:3|max:100',
             'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
@@ -109,10 +109,11 @@ class PonentesController extends Controller
 
         // Validación fallida
         if ($validator->fails()) {
-            return response()->json([
-                'mensaje' => 'Error en la validación',
-                'errores' => $validator->errors()
-            ], 400);
+            $data = [
+                'mensaje' => 'Error en la validacion',
+                'status' => 400
+            ];
+            return response()->json($data, 400);
         }
 
         // Actualizar los datos del ponente
@@ -136,15 +137,17 @@ class PonentesController extends Controller
             $ponente->fotografia = $fotografiaPath;
         }
 
-        // Guardar los cambios
+
         $ponente->save();
 
-        // Responder con el estado y los datos actualizados
-        return response()->json([
-            'mensaje' => 'Ponente actualizado correctamente',
+        $data = [
+            'mensaje' => 'Se ha actualizado el ponente',
             'ponente' => $ponente,
             'status' => 200
-        ], 200);
+        ];
+
+        return response()->json($data, 200);
+
     }
 
     public function destroy($id){
