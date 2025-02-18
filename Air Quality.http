@@ -90,3 +90,12 @@ Content-Type: application/json
 {
     "user_id":1
 }
+
+###
+PATCH localhost:8000/api/usuarioCaracteristicas/1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "tipo": "taller"
+}

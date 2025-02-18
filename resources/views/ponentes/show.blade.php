@@ -76,12 +76,12 @@
                             alert('Ponente eliminado correctamente');
                             window.location.reload();
                         } else {
-                            alert('Error al eliminar el ponente: ' + (data.mensaje || 'Error desconocido'));
+                            alert('Error al eliminar el ponente: ' + data.mensaje);
                         }
                     })
                     .catch(error => {
                         console.error('Error al eliminar el ponente:', error);
-                        alert('Error de conexión con la API');
+                        alert('No se puede eliminar el ponente');
                     });
             }
         }
