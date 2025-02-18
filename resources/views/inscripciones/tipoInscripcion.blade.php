@@ -35,6 +35,9 @@
                     <!-- Mensaje de error -->
                     <p id="errorMensaje" class="text-red-500 text-sm mt-2 hidden">No puedes seleccionar "Gratuito" o "Estudiante" si tu email no está registrado.</p>
 
+                    <div id="paypal-button-container">
+
+                    </div>
                     <!-- Botón de envío -->
                     <button type="submit" class="mt-6 bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600">
                         Actualizar
@@ -44,17 +47,27 @@
         </div>
     </div>
 
+    <script src="https://www.paypal.com/sdk/js?client-id=AZmwcCQe_PVANk6d24YIZnEu84iflMqI_TyCixSqRRxD78KV5iQOtTLT4Iauz2LdHSFwSxRpFZXw3_fY&currency=EUR"></script>
     <script>
-        // 1️⃣ Obtener datos del usuario autenticado desde Blade
         const userId = {{ Auth::user()->id }};
         const userEmail = "{{ Auth::user()->email }}";
         let listaEstudiantes = [];
+        let pagoRealizado = false; // Nuevo flag para controlar si el usuario ha pagado
+
+        // Precios de inscripción
+        const precios = {
+            "1": 15,  // Presencial
+            "2": 7,   // Virtual
+            "3": 0    // Gratuito
+        };
+
+        let selectedTipoInscripcion = "1"; // Presencial por defecto
+        let precioActual = precios[selectedTipoInscripcion];
 
         document.addEventListener("DOMContentLoaded", async function () {
             await obtenerListaEstudiantes();
         });
 
-        // 2️⃣ Obtener la lista de estudiantes desde la API
         async function obtenerListaEstudiantes() {
             try {
                 const response = await fetch("http://localhost:8000/api/estudiantes");
@@ -68,43 +81,133 @@
             }
         }
 
-        // 3️⃣ Manejar el envío del formulario
-        document.getElementById("updateForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+        // Capturar el cambio de tipo de inscripción
+        document.getElementById("tipo_inscripcion").addEventListener("change", function () {
+            selectedTipoInscripcion = this.value;
+            precioActual = precios[selectedTipoInscripcion];
+            pagoRealizado = false; // Resetear pago cuando cambie el tipo
+            console.log("Nuevo precio:", precioActual);
+            renderizarBotonPaypal();
+        });
 
-            const estudianteSeleccionado = document.querySelector('input[name="estudiante"]:checked').value === "true";
-            const tipoInscripcion = document.getElementById("tipo_inscripcion").value;
-            const esEstudiante = listaEstudiantes.includes(userEmail);
-            const errorMensaje = document.getElementById("errorMensaje");
+        function renderizarBotonPaypal() {
+            document.getElementById("paypal-button-container").innerHTML = "";
 
-            // Validar si el usuario puede seleccionar "Estudiante" o "Gratuito"
-            if ((estudianteSeleccionado || tipoInscripcion === "3") && !esEstudiante) {
-                errorMensaje.classList.remove("hidden");
-                return;
-            } else {
-                errorMensaje.classList.add("hidden");
-            }
+            paypal.Buttons({
+                style: {
+                    'color': 'blue',
+                    'shape': 'pill',
+                    'label': 'pay'
+                },
+                createOrder: function (data, actions) {
+                    if (precioActual === 0) {
+                        alert("No es necesario pagar. La inscripción gratuita se actualizará automáticamente.");
+                        pagoRealizado = true;
+                        return;
+                    }
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: precioActual.toString()
+                            }
+                        }]
+                    });
+                },
 
-            // Enviar la actualización
+                onApprove: function (data, actions) {
+                    return actions.order.capture().then(function (detalles) {
+                        console.log("Pago completado:", detalles);
+                        pagoRealizado = true;
+
+                        const pagoData = {
+                            user_id: userId,
+                            tipo_pago: (selectedTipoInscripcion === "1") ? "Presencial" : (selectedTipoInscripcion === "2") ? "Virtual" : "Gratuito",
+                            cantidad: precioActual,
+                            fecha_pago: new Date().toISOString().slice(0, 19).replace("T", " "),
+                            estado: "Pagado"
+                        };
+
+                        enviarPagoAPI(pagoData);
+                    });
+                },
+
+                onCancel: function (data) {
+                    alert("Pago cancelado");
+                }
+            }).render("#paypal-button-container");
+        }
+
+        async function enviarPagoAPI(pagoData) {
             try {
-                const response = await fetch(`http://localhost:8000/api/usuarioCaracteristicas/${userId}`, {
-                    method: "PATCH",
+                const response = await fetch("http://localhost:8000/api/pagos", {
+                    method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
                     },
-                    body: JSON.stringify({ estudiante: estudianteSeleccionado, tipo_inscripcion: tipoInscripcion })
+                    body: JSON.stringify(pagoData)
                 });
 
                 const data = await response.json();
 
-                alert(data.mensaje);
-                window.location.href = "/eventos"
+                if (response.ok) {
+                    alert("Pago registrado correctamente en la API");
+                } else {
+                    alert("Error al registrar el pago en la API");
+                }
+
             } catch (error) {
-                console.error("Error al actualizar:", error);
-                alert("Error de conexión con la API");
+                console.error("Error al conectar con la API:", error);
+                alert("Error de conexión con la API Pagos");
             }
+        }
+
+        document.getElementById("updateForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const estudianteSeleccionado = document.querySelector('input[name="estudiante"]:checked').value === "true";
+            const esEstudiante = listaEstudiantes.includes(userEmail);
+            const errorMensaje = document.getElementById("errorMensaje");
+
+            if (estudianteSeleccionado && !esEstudiante) {
+                errorMensaje.classList.remove("hidden");
+                alert("No puedes seleccionar 'Estudiante' si tu email no está registrado.");
+                return;
+            }
+
+            if (!pagoRealizado && precioActual > 0) {
+                alert("Debes completar el pago antes de actualizar tu inscripción.");
+                return;
+            }
+
+            actualizarUsuario(estudianteSeleccionado);
         });
+
+        async function actualizarUsuario(estudianteSeleccionado) {
+            const response = await fetch(`http://localhost:8000/api/usuarioCaracteristicas/${userId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                },
+                body: JSON.stringify({ estudiante: estudianteSeleccionado, tipo_inscripcion: selectedTipoInscripcion })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error al actualizar:", errorData);
+                alert("Error de conexión con la API usuario");
+                return;
+            }
+
+            const data = await response.json();
+            alert(data.mensaje);
+            window.location.href = "/eventos";
+        }
+
+        renderizarBotonPaypal();
+
     </script>
+
 
 </x-app-layout>

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('user_id')->unique()->constrained();
             $table->string('tipo_pago');
-            $table->string('cantidad');
+            $table->decimal('cantidad', 10, 2);
             $table->dateTime('fecha_pago');
             $table->string('estado')->default('Pendiente')->enum('Pendiente', 'Completado');
             $table->timestamps();

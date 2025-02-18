@@ -99,3 +99,20 @@ Content-Type: application/json
 {
     "tipo": "taller"
 }
+
+###
+POST localhost:8000/api/pagos
+Accept: application/json
+Content-Type: application/json
+
+{
+    "user_id": 1,
+    "tipo_pago": "Presencial",
+    "cantidad": 15,
+    "fecha_pago": "2025-02-18 17:52:30",
+    "estado": "Pagado"
+}
+
+###
+GET localhost:8000/api/pagos
+Accept: application/json

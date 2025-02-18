@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\EstudiantesController;
 use App\Http\Controllers\Api\EventosController;
+use App\Http\Controllers\Api\PagosController;
 use App\Http\Controllers\Api\PonentesController;
 use App\Http\Controllers\Api\UsuarioCaracteristicasController;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/usuarioCaracteristicas', [UsuarioCaracteristicasController::class, 'index']);
 Route::patch('/usuarioCaracteristicas/{id}', [UsuarioCaracteristicasController::class, 'inscribirEnEvento']);
+Route::put('/usuarioCaracteristicas/{id}', [UsuarioCaracteristicasController::class, 'update']);
 
 Route::get('/ponentes', [PonentesController::class, 'index']);
 Route::post('/ponentes', [PonentesController::class, 'store']);
@@ -30,3 +32,7 @@ Route::get('/estudiantes', [EstudiantesController::class, 'index']);
 Route::post('/estudiantes', [EstudiantesController::class, 'store']);
 Route::delete('/estudiantes/{id}', [EstudiantesController::class, 'destroy']);
 Route::put('/estudiantes/{id}', [EstudiantesController::class, 'update']);
+
+Route::get('/pagos', [PagosController::class, 'index']);
+Route::post('/pagos', [PagosController::class, 'store']);
+Route::get('/pagos/{id}', [PagosController::class, 'show']);
