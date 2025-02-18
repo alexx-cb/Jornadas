@@ -19,6 +19,11 @@
                         {{ __('Eventos') }}
                     </x-nav-link>
 
+                    @if(auth()->check() && auth()->user()->hasRole('admin'))
+                        <x-nav-link :href="url('/pagos')" :active="request()->routeIs('pagos.pagos')">
+                            {{ __('Pagos') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -77,6 +82,11 @@
             <x-nav-link :href="route('eventos.show')" :active="request()->routeIs('eventos.show')">
                 {{ __('Eventos') }}
             </x-nav-link>
+            @if(auth()->check() && auth()->user()->hasRole('admin'))
+                <x-responsive-nav-link :href="url('/pagos')" :active="request()->routeIs('pagos.pagos')">
+                    {{ __('Pagos') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

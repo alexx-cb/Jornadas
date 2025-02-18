@@ -13,6 +13,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/usuarioCaracteristicas', [UsuarioCaracteristicasController::class, 'index']);
+Route::get('/usuarioCaracteristicas/{id}', [UsuarioCaracteristicasController::class, 'show']);
 Route::patch('/usuarioCaracteristicas/{id}', [UsuarioCaracteristicasController::class, 'inscribirEnEvento']);
 Route::put('/usuarioCaracteristicas/{id}', [UsuarioCaracteristicasController::class, 'update']);
 

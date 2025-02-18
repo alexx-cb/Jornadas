@@ -153,4 +153,23 @@ class UsuarioCaracteristicasController extends Controller
         ], 200);
     }
 
+    public function show($id){
+        $usuario = UsuarioCaracteristicas::find($id);
+
+        if(!$usuario){
+            $data = [
+                'mensaje' => 'Usuario no encontrado',
+                'status' => 404,
+            ];
+            return response()->json($data, 404);
+        }
+
+        $data = [
+            'usuario' => $usuario,
+            'status' => 200,
+        ];
+        return response()->json($data, 200);
+
+    }
+
 }

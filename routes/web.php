@@ -49,7 +49,9 @@ Route::middleware(['auth', RoleMiddleware::class. ':admin'])->get('/eventos/crea
     return view('eventos.crear');
 })->name('eventos.crear');
 
-
+Route::middleware(['auth', RoleMiddleware::class. ':admin'])->get('/pagos', function () {
+    return view('pagos.pagos');
+})->name('pagos.pagos');
 
 
 require __DIR__.'/auth.php';
