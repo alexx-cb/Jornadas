@@ -13,6 +13,8 @@ class UsuarioCaracteristicas extends Model
         'email',
         'tipo_inscripcion',
         'estudiante',
+        'talleres',
+        'conferencias'
     ];
 
     public function user()

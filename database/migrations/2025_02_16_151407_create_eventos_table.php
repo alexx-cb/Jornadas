@@ -21,7 +21,7 @@ return new class extends Migration
             $table->time('hora_inicio');
             $table->time('hora_fin');
             $table->integer('cupo_maximo');
-            $table->integer('cupo_actual');
+            $table->json('cupo_actual');
             $table->timestamps();
 
             $table->unique(['ponente_id', 'dia', 'hora_inicio']);

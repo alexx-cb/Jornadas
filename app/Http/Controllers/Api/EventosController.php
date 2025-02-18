@@ -50,6 +50,10 @@ class EventosController extends Controller
 
     public function store(Request $request){
 
+        $request->merge([
+            'cupo_actual' => is_array($request->cupo_actual) ? $request->cupo_actual : [],
+        ]);
+
         $validacion = Validator::make($request->all(), [
             'nombre' => 'required|max:255',
             'descripcion' => 'required|max:255',
@@ -58,9 +62,9 @@ class EventosController extends Controller
             'dia' => 'required|string|in:Jueves,Viernes',
             'hora_inicio' => 'required|date_format:H:i',
             'cupo_maximo' => 'required|integer|min:1',
-            'cupo_actual' => 'required|integer|min:0',
+            'cupo_actual' => 'array',
+            'cupo_actual.*' => 'integer|min:0',
         ]);
-
 
         if ($validacion->fails()) {
             return response()->json([
@@ -70,43 +74,27 @@ class EventosController extends Controller
             ], 400);
         }
 
-        // Validar que no haya evento ya asignado para ese ponente en mismo día y hora
-        $validacionUnica = Eventos::validarEventoUnico(
-            $request->ponente_id,
-            $request->dia,
-            $request->hora_inicio
-        );
-
-        if (!$validacionUnica) {
-
-            $data = [
-                'mensaje' => 'Ya existe un evento con ese ponente a la misma hora',
-                'status' => 200,
-            ];
-            return response()->json($data, 200);
-        }
-
-        // Calcular hora finalización (inicio + 55 minutos)
+        // Calcular la hora de finalización (inicio + 55 minutos)
         $hora_inicio = Carbon::createFromFormat('H:i', $request->hora_inicio);
-        $hora_fin = $hora_inicio->addMinutes(55)->format('H:i');
+        $hora_fin = $hora_inicio->copy()->addMinutes(55)->format('H:i');
 
-        // Validar que no se solapen los eventos para este tipo de evento en el mismo día
-        $validacionSolapamiento = Eventos::validarDistribucionEventos(
+        // Validar que no haya solapamiento de eventos con el mismo ponente y tipo
+        $eventoSolapado = Eventos::validarSolapamiento(
+            $request->ponente_id,
             $request->dia,
             $request->hora_inicio,
             $hora_fin,
             $request->tipo_evento
         );
 
-        if (!$validacionSolapamiento) {
-            $data = [
-                'mensaje' => 'Ya hay un evento del mismo tipo programado a la misma hora',
-                'status' => 200
-            ];
-            return response()->json($data, 200);
+        if ($eventoSolapado) {
+            return response()->json([
+                'mensaje' => 'El evento se solapa con otro ya existente del mismo tipo en ese horario',
+                'status' => 200,
+            ], 200);
         }
 
-        // Crear el evento
+        // Crear el evento si no hay solapamiento
         $evento = Eventos::create([
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
@@ -119,14 +107,12 @@ class EventosController extends Controller
             'cupo_actual' => $request->cupo_actual,
         ]);
 
-        $data = [
+        return response()->json([
             'mensaje' => 'Evento creado correctamente',
             'evento' => $evento,
             'status' => 200,
-        ];
-        return response()->json($data, 200);
+        ], 200);
     }
-
 
     public function destroy($id){
 

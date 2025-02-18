@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Eventos extends Model
 {
-    // Campos que pueden ser asignados de manera masiva
+
+    protected $casts = [
+        'cupo_actual' => 'array',
+    ];
+
     protected $fillable = [
         'nombre',
         'descripcion',

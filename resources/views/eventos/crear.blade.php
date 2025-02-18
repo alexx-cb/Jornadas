@@ -69,10 +69,10 @@
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             try {
-                const ponentes = await obtenerPonentes(); // 1️⃣ Obtener lista de ponentes
-                const horasDisponibles = await obtenerHorasDisponibles(); // 2️⃣ Filtrar horas
-                llenarSelectPonentes(ponentes); // 3️⃣ Llenar select de ponentes
-                llenarSelectHoras(horasDisponibles); // 4️⃣ Llenar select de horas
+                const ponentes = await obtenerPonentes();
+                const horasDisponibles = await obtenerHorasDisponibles();
+                llenarSelectPonentes(ponentes);
+                llenarSelectHoras(horasDisponibles);
             } catch (error) {
                 console.error("Error general:", error);
             }
@@ -135,8 +135,8 @@
                 tipo_evento: formData.get("tipo_evento"),
                 dia: formData.get("dia"),
                 hora_inicio: formData.get("hora_inicio"),
-                cupo_maximo: formData.get("cupo_maximo"),
-                cupo_actual: 0
+                cupo_maximo: parseInt(formData.get("cupo_maximo")),
+                cupo_actual: [] // Asegurar que es un array
             };
 
             fetch("http://localhost:8000/api/eventos", {
@@ -144,12 +144,17 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(datos)
+                body: JSON.stringify(datos) // Convertir datos a JSON correctamente
             })
                 .then(response => response.json())
                 .then(data => {
-                    alert(data.mensaje);
-                    window.location.href = "/eventos";
+                    if (data.status === 400) {
+                        console.error("Errores de validación:", data.errores);
+                        alert("Error en la validación. Revisa los campos.");
+                    } else {
+                        alert(data.mensaje);
+                        window.location.href = "/eventos";
+                    }
                 })
                 .catch(error => {
                     console.error("Error en la solicitud:", error);

@@ -64,3 +64,20 @@ Content-Type: application/json
     "estudiante": false,
     "tipo_inscripcion": 2
 }
+
+###
+POST localhost:8000/api/eventos
+Accept: application/json
+Content-Type: application/json
+
+{
+    "nombre": "afasdf",
+    "descripcion": "fadfsd",
+    "ponente_id": 1,
+    "tipo_evento": "Taller",
+    "dia": "Jueves",
+    "hora_inicio": "10:00",
+    "hora_fin": "10:55",
+    "cupo_maximo": 50,
+    "cupo_actual": []
+}

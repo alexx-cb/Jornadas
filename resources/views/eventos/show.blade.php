@@ -82,7 +82,7 @@
                         <p class="text-gray-600">🎤 Ponente: ${ponentesInfo[evento.ponente_id]}</p>
                         <p class="text-gray-600">📝 Tipo: <span class="font-medium">${evento.tipo_evento}</span></p>
                         <p class="text-gray-600 mt-2">📖 Descripción: ${evento.descripcion}</p>
-                        <p class="text-gray-600">👥 Cupo: ${evento.cupo_actual} / ${evento.cupo_maximo}</p>
+                        <p class="text-gray-600">👥 Cupo: ${evento.cupo_actual.length} / ${evento.cupo_maximo}</p>
                         <div class="flex gap-2 mt-4">
                             ${window.isAdmin ? `
                                 <button onclick="eliminarEvento(${evento.id})" class="bg-red-500 text-black py-2 px-4 rounded-md hover:bg-red-600">Eliminar</button>
