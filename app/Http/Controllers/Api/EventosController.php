@@ -114,6 +114,54 @@ class EventosController extends Controller
         ], 200);
     }
 
+    public function updateCupoActual(Request $request, $id){
+        $evento = Eventos::find($id);
+
+        if (!$evento) {
+            return response()->json([
+                'mensaje' => 'Evento no encontrado',
+                'status' => 404,
+            ], 404);
+        }
+
+
+        $validacion = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validacion->fails()) {
+            return response()->json([
+                'mensaje' => 'Error en la validación',
+                'errores' => $validacion->errors(),
+                'status' => 400,
+            ], 400);
+        }
+
+        if (in_array($request->user_id, $evento->cupo_actual)) {
+            return response()->json([
+                'mensaje' => 'Este usuario ya está inscrito en el evento',
+                'status' => 400,
+            ], 400);
+        }
+
+        if (count($evento->cupo_actual) < $evento->cupo_maximo) {
+
+            $evento->cupo_actual = array_merge($evento->cupo_actual, [$request->user_id]);
+            $evento->save();
+
+            return response()->json([
+                'mensaje' => 'Usuario inscrito correctamente al evento',
+                'evento' => $evento,
+                'status' => 200,
+            ], 200);
+        } else {
+            return response()->json([
+                'mensaje' => 'El evento ha alcanzado el cupo máximo',
+                'status' => 400,
+            ], 400);
+        }
+    }
+
     public function destroy($id){
 
         $evento = Eventos::find($id);

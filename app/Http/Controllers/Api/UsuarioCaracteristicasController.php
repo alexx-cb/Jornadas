@@ -43,6 +43,8 @@ class UsuarioCaracteristicasController extends Controller
         $validator = Validator::make($request->all(), [
             'estudiante' => 'required|boolean',
             'tipo_inscripcion' => 'required|integer',
+            'talleres' => 'required|integer',
+            'conferencias' => 'required|integer',
         ]);
 
         if($validator->fails()){
@@ -81,6 +83,8 @@ class UsuarioCaracteristicasController extends Controller
         $validator = Validator::make($request->all(), [
             'estudiante' => 'boolean',
             'tipo_inscripcion' => 'integer',
+            'talleres' => 'integer|min:0|max:4',
+            'conferencias' => 'integer|min:0|max:5',
         ]);
 
         if($validator->fails()){

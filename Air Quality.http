@@ -81,3 +81,12 @@ Content-Type: application/json
     "cupo_maximo": 50,
     "cupo_actual": []
 }
+
+###
+PUT localhost:8000/api/eventos/2
+Accept: application/json
+Content-Type: application/json
+
+{
+    "user_id":1
+}
