@@ -42,9 +42,8 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const ponenteId = "{{ $id }}"; // Obtén el ID desde la URL
+            const ponenteId = "{{ $id }}";
 
-            // Realizamos el fetch para obtener los datos del ponente
             fetch(`http://localhost:8000/api/ponentes/${ponenteId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -58,12 +57,12 @@
                 })
                 .catch(error => console.error("Error al obtener los datos del ponente:", error));
 
-            // Cuando se envíe el formulario
+
             document.getElementById('editPonenteForm').addEventListener('submit', function(event) {
                 event.preventDefault();
 
                 const formData = new FormData();
-                formData.append('_method', 'PUT'); // Emular PUT
+                formData.append('_method', 'PUT');
                 formData.append('nombre', document.getElementById('nombre').value);
                 formData.append('areas_experiencia', document.getElementById('areas_experiencia').value);
                 formData.append('redes_sociales', document.getElementById('redes_sociales').value);
@@ -76,7 +75,7 @@
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
                 fetch(`http://localhost:8000/api/ponentes/${ponenteId}`, {
-                    method: 'POST', // Usamos POST para el FormData
+                    method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
                     },
@@ -86,7 +85,7 @@
                     .then(data => {
                         if (data.status === 200) {
                             alert('Ponente actualizado correctamente');
-                            window.location.href = '/ponentes'; // Opcional: redirigir después de actualizar
+                            window.location.href = '/ponentes';
                         } else {
                             let errores = '';
                             if (data.errores) {

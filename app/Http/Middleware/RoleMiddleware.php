@@ -15,7 +15,7 @@ class RoleMiddleware
             return $next($request);  // Permite continuar si tiene el rol
         }
 
-        // Si no tiene el rol adecuado, redirige a otra página o muestra un mensaje de error
-        return redirect()->route('dashboard')->with('error', 'No tienes permiso para acceder a esta página');
+        // Si no tiene el rol adecuado, redirige a otra página
+        return redirect()->route('eventos.show')->with('error', 'No tienes permiso para acceder a esta página');
     }
 }

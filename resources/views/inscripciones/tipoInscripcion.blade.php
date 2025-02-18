@@ -13,7 +13,7 @@
                 <form id="updateForm">
                     @csrf
 
-                    <!-- Select de Tipo de Inscripción -->
+
                     <label for="tipo_inscripcion" class="block text-sm font-medium text-gray-700">Tipo de Inscripción:</label>
                     <select id="tipo_inscripcion" name="tipo_inscripcion" class="mt-1 p-2 border border-gray-300 rounded w-full">
                         <option value="1">Presencial</option>
@@ -21,7 +21,7 @@
                         <option value="3">Gratuito</option>
                     </select>
 
-                    <!-- Radio para Estudiante -->
+
                     <div class="mt-4">
                         <span class="text-sm font-medium text-gray-700">¿Eres estudiante?</span>
                         <label class="ml-4">
@@ -32,13 +32,13 @@
                         </label>
                     </div>
 
-                    <!-- Mensaje de error -->
+
                     <p id="errorMensaje" class="text-red-500 text-sm mt-2 hidden">No puedes seleccionar "Gratuito" o "Estudiante" si tu email no está registrado.</p>
 
                     <div id="paypal-button-container">
 
                     </div>
-                    <!-- Botón de envío -->
+
                     <button type="submit" class="mt-6 bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600">
                         Actualizar
                     </button>
@@ -52,16 +52,15 @@
         const userId = {{ Auth::user()->id }};
         const userEmail = "{{ Auth::user()->email }}";
         let listaEstudiantes = [];
-        let pagoRealizado = false; // Nuevo flag para controlar si el usuario ha pagado
+        let pagoRealizado = false;
 
-        // Precios de inscripción
         const precios = {
-            "1": 15,  // Presencial
-            "2": 7,   // Virtual
-            "3": 0    // Gratuito
+            "1": 15,
+            "2": 7,
+            "3": 0
         };
 
-        let selectedTipoInscripcion = "1"; // Presencial por defecto
+        let selectedTipoInscripcion = "1";
         let precioActual = precios[selectedTipoInscripcion];
 
         document.addEventListener("DOMContentLoaded", async function () {
@@ -81,11 +80,10 @@
             }
         }
 
-        // Capturar el cambio de tipo de inscripción
         document.getElementById("tipo_inscripcion").addEventListener("change", function () {
             selectedTipoInscripcion = this.value;
             precioActual = precios[selectedTipoInscripcion];
-            pagoRealizado = false; // Resetear pago cuando cambie el tipo
+            pagoRealizado = false;
             console.log("Nuevo precio:", precioActual);
             renderizarBotonPaypal();
         });

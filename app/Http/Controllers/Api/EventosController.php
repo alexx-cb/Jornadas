@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class EventosController extends Controller
 {
-    //
-
     public function index(){
         $eventos = Eventos::all();
 
@@ -67,11 +65,12 @@ class EventosController extends Controller
         ]);
 
         if ($validacion->fails()) {
-            return response()->json([
-                'mensaje' => 'Error en la validación',
-                'errores' => $validacion->errors(),
+
+            $data = [
+                'mensaje' => 'Error en la validacion',
                 'status' => 400,
-            ], 400);
+            ];
+            return response()->json($data, 400);
         }
 
         // Calcular la hora de finalización (inicio + 55 minutos)
@@ -88,10 +87,11 @@ class EventosController extends Controller
         );
 
         if ($eventoSolapado) {
-            return response()->json([
+            $data =[
                 'mensaje' => 'El evento se solapa con otro ya existente del mismo tipo en ese horario',
-                'status' => 200,
-            ], 200);
+                'status' => 500,
+            ];
+            return response()->json($data, 500);
         }
 
         // Crear el evento si no hay solapamiento
@@ -107,21 +107,24 @@ class EventosController extends Controller
             'cupo_actual' => $request->cupo_actual,
         ]);
 
-        return response()->json([
+        $data = [
             'mensaje' => 'Evento creado correctamente',
             'evento' => $evento,
             'status' => 200,
-        ], 200);
+        ];
+        return response()->json($data, 200);
     }
 
     public function updateCupoActual(Request $request, $id){
         $evento = Eventos::find($id);
 
-        if (!$evento) {
-            return response()->json([
+        if(!$evento){
+
+            $data = [
                 'mensaje' => 'Evento no encontrado',
                 'status' => 404,
-            ], 404);
+            ];
+            return response()->json($data, 404);
         }
 
 
@@ -130,18 +133,20 @@ class EventosController extends Controller
         ]);
 
         if ($validacion->fails()) {
-            return response()->json([
-                'mensaje' => 'Error en la validación',
-                'errores' => $validacion->errors(),
+            $data = [
+                'mensaje' => 'Error en la validacion',
+                'error' => $validacion->errors(),
                 'status' => 400,
-            ], 400);
+            ];
+            return response()->json($data, 400);
         }
 
         if (in_array($request->user_id, $evento->cupo_actual)) {
-            return response()->json([
-                'mensaje' => 'Este usuario ya está inscrito en el evento',
-                'status' => 400,
-            ], 400);
+            $data = [
+                'mensaje' => 'Ya esta registrado en este evento',
+                'status' => 500,
+            ];
+            return response()->json($data, 500);
         }
 
         if (count($evento->cupo_actual) < $evento->cupo_maximo) {
@@ -149,16 +154,18 @@ class EventosController extends Controller
             $evento->cupo_actual = array_merge($evento->cupo_actual, [$request->user_id]);
             $evento->save();
 
-            return response()->json([
-                'mensaje' => 'Usuario inscrito correctamente al evento',
-                'evento' => $evento,
+            $data = [
+                'mensaje' => 'Usuario inscrito correctamente',
                 'status' => 200,
-            ], 200);
+            ];
+            return response()->json($data, 200);
+
         } else {
-            return response()->json([
-                'mensaje' => 'El evento ha alcanzado el cupo máximo',
-                'status' => 400,
-            ], 400);
+            $data = [
+                'mensaje' => 'El evento esta completo',
+                'status' => 500,
+            ];
+            return response()->json($data, 500);
         }
     }
 

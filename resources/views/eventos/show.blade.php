@@ -113,13 +113,12 @@
                     return;
                 }
 
-                // Actualizar usuarioCaracteristicas (sumar al campo correspondiente)
                 let userCaracteristicasResponse = await fetch(`http://localhost:8000/api/usuarioCaracteristicas/${window.userId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ tipo: tipoEvento.toLowerCase() }) // "taller" o "conferencia"
+                    body: JSON.stringify({ tipo: tipoEvento.toLowerCase() })
                 });
 
                 let userCaracteristicasData = await userCaracteristicasResponse.json();

@@ -45,7 +45,7 @@
 
     <script>
         document.getElementById('createPonenteForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Previene que el formulario se envíe de forma tradicional
+            event.preventDefault();
 
 
             const nombre = document.getElementById('nombre').value;

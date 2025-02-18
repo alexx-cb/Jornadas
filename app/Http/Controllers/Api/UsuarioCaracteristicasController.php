@@ -34,10 +34,11 @@ class UsuarioCaracteristicasController extends Controller
         $usuario = UsuarioCaracteristicas::find($id);
 
         if (!$usuario) {
-            return response()->json([
+            $data = [
                 'mensaje' => 'Usuario no encontrado',
-                'status' => 404
-            ], 404);
+                'status' => 404,
+            ];
+            return response()->json($data, 404);
         }
 
         $validator = Validator::make($request->all(), [
@@ -46,11 +47,12 @@ class UsuarioCaracteristicasController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'mensaje' => 'Error en la validación del usuario',
+            $data = [
+                'mensaje' => 'Error en la validacion',
                 'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
+                'status' => 400,
+            ];
+            return response()->json($data, 400);
         }
 
         $tipoInscripcion = $request->input('tipo_inscripcion');
@@ -64,10 +66,11 @@ class UsuarioCaracteristicasController extends Controller
                 ->exists();
 
             if (!$pagoRealizado) {
-                return response()->json([
-                    'mensaje' => 'Debes completar el pago antes de actualizar tu inscripción.',
-                    'status' => 403
-                ], 403);
+                $data = [
+                    'mensaje' => 'Debes completar el pago antes de actualizar tu inscripción',
+                    'status' => 400,
+                ];
+                return response()->json($data, 400);
             }
         }
 
@@ -75,10 +78,12 @@ class UsuarioCaracteristicasController extends Controller
         $esEstudianteVerificado = Estudiantes::where('email', $usuario->user->email)->exists();
 
         if ($esEstudiante && !$esEstudianteVerificado) {
-            return response()->json([
+
+            $data = [
                 'mensaje' => 'No puedes seleccionar "Estudiante" si tu email no está registrado como estudiante.',
-                'status' => 403
-            ], 403);
+                'status' => 400,
+            ];
+            return response()->json($data, 400);
         }
 
 
@@ -86,21 +91,23 @@ class UsuarioCaracteristicasController extends Controller
         $usuario->tipo_inscripcion = $tipoInscripcion;
         $usuario->save();
 
-        return response()->json([
-            'mensaje' => 'Usuario actualizado con éxito.',
+        $data = [
+            'mensaje' => 'Usuario actualizado correctamente',
             'usuario' => $usuario,
-            'status' => 200
-        ], 200);
+            'status' => 200,
+        ];
+        return response()->json($data, 200);
     }
 
     public function inscribirEnEvento(Request $request, $id){
         $usuario = UsuarioCaracteristicas::find($id);
 
         if (!$usuario) {
-            return response()->json([
+            $data = [
                 'mensaje' => 'Usuario no encontrado',
                 'status' => 404,
-            ], 404);
+            ];
+            return response()->json($data, 404);
         }
 
         $validator = Validator::make($request->all(), [
@@ -108,11 +115,12 @@ class UsuarioCaracteristicasController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'mensaje' => 'Error en la validación',
+            $data = [
+                'mensaje' => 'Error en la validacion',
                 'errors' => $validator->errors(),
                 'status' => 400,
-            ], 400);
+            ];
+            return response()->json($data, 400);
         }
 
         $pagoRealizado = Pagos::where('user_id', $usuario->user_id)
@@ -120,10 +128,11 @@ class UsuarioCaracteristicasController extends Controller
             ->exists();
 
         if (!$pagoRealizado) {
-            return response()->json([
-                'mensaje' => 'No puedes inscribirte en eventos hasta completar el pago.',
-                'status' => 403,
-            ], 403);
+            $data = [
+                "mensaje" => 'Debes completar el pago antes de actualizar tu pago',
+                'status' => 400,
+            ];
+            return response()->json($data, 400);
         }
 
         if ($request->tipo === 'taller' && $usuario->talleres < 4) {
@@ -131,26 +140,21 @@ class UsuarioCaracteristicasController extends Controller
         } elseif ($request->tipo === 'conferencia' && $usuario->conferencias < 5) {
             $usuario->conferencias += 1;
         } else {
-            return response()->json([
-                'mensaje' => 'Límite alcanzado para ' . $request->tipo,
+            $data = [
+                'mensaje' => 'no se puede inscribir a mas eventos del tipo' . $request->tipo,
                 'status' => 400,
-            ], 400);
+            ];
+            return response()->json($data, 400);
         }
 
         $usuario->save();
 
-        return response()->json([
-            'mensaje' => 'Inscripción exitosa en ' . $request->tipo,
-            'usuario' => [
-                'user_id' => $usuario->user_id,
-                'email' => $usuario->email,
-                'tipo_inscripcion' => $usuario->tipo_inscripcion,
-                'estudiante' => $usuario->estudiante,
-                'talleres' => $usuario->talleres,
-                'conferencias' => $usuario->conferencias
-            ],
-            'status' => 200,
-        ], 200);
+        $data = [
+            'mensaje' => 'Inscripcion exitosa',
+            'usuario' => $usuario,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
     }
 
     public function show($id){

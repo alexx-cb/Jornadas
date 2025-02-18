@@ -136,7 +136,7 @@
                 dia: formData.get("dia"),
                 hora_inicio: formData.get("hora_inicio"),
                 cupo_maximo: parseInt(formData.get("cupo_maximo")),
-                cupo_actual: [] // Asegurar que es un array
+                cupo_actual: []
             };
 
             fetch("http://localhost:8000/api/eventos", {
@@ -144,7 +144,7 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(datos) // Convertir datos a JSON correctamente
+                body: JSON.stringify(datos)
             })
                 .then(response => response.json())
                 .then(data => {
