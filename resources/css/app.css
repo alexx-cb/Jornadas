@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    background-color: theme('colors.background'); /* Fondo gris claro */
+    color: theme('colors.secondary'); /* Texto gris oscuro */
+    font-family: Figtree, sans-serif;
+    @apply antialiased; /* Aplica antialiasing (de Tailwind) */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: theme('colors.secondary'); /* Encabezados en gris oscuro */
+}
+
+a {
+    color: theme('colors.primary'); /* Enlaces en el color primario */
+    text-decoration: none; /* Elimina el subrayado por defecto */
+}
+
+a:hover {
+    text-decoration: underline; /* Subraya al pasar el ratón */
+}
+
+/* Estilos para el header */
+header {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para la sección Hero */
+.hero {
+    background-color: #f9fafb; /* Gray 50, un gris muy claro */
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: #6b7280; /* Gray 500 */
+}
+
+/* Estilos para el botón */
+.btn-primary {
+    background-color: theme('colors.primary');
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem; /* Rounded-md */
+    font-weight: 600; /* Semibold */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #e02418; /* Un tono más oscuro del primario */
+}

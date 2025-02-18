@@ -19,3 +19,20 @@ export default {
 
     plugins: [forms],
 };
+module.exports = {
+    content: [
+        './resources/**/*.blade.php',
+        './resources/**/*.js',
+        './resources/**/*.vue',
+    ],
+    theme: {
+        extend: {
+            colors: {
+                primary: '#FF2D20', // Tu color primario
+                secondary: '#333333', // Gris oscuro para el texto
+                background: '#F2F2F2', // Un gris claro como fondo general
+            },
+        },
+    },
+    plugins: [],
+};
