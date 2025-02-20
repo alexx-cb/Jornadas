@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventosRequest;
 use App\Models\Eventos;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Validator;
 
 class EventosController extends Controller
 {
@@ -46,55 +45,11 @@ class EventosController extends Controller
     }
 
 
-    public function store(Request $request){
-
-        $request->merge([
-            'cupo_actual' => is_array($request->cupo_actual) ? $request->cupo_actual : [],
-        ]);
-
-        $validacion = Validator::make($request->all(), [
-            'nombre' => 'required|max:255',
-            'descripcion' => 'required|max:255',
-            'tipo_evento' => 'required|in:Taller,Conferencia',
-            'ponente_id' => 'required|exists:ponentes,id',
-            'dia' => 'required|string|in:Jueves,Viernes',
-            'hora_inicio' => 'required|date_format:H:i',
-            'cupo_maximo' => 'required|integer|min:1',
-            'cupo_actual' => 'array',
-            'cupo_actual.*' => 'integer|min:0',
-        ]);
-
-        if ($validacion->fails()) {
-
-            $data = [
-                'mensaje' => 'Error en la validacion',
-                'status' => 400,
-            ];
-            return response()->json($data, 400);
-        }
-
-        // Calcular la hora de finalización (inicio + 55 minutos)
+    public function store(EventosRequest $request)
+    {
         $hora_inicio = Carbon::createFromFormat('H:i', $request->hora_inicio);
         $hora_fin = $hora_inicio->copy()->addMinutes(55)->format('H:i');
 
-        // Validar que no haya solapamiento de eventos con el mismo ponente y tipo
-        $eventoSolapado = Eventos::validarSolapamiento(
-            $request->ponente_id,
-            $request->dia,
-            $request->hora_inicio,
-            $hora_fin,
-            $request->tipo_evento
-        );
-
-        if ($eventoSolapado) {
-            $data =[
-                'mensaje' => 'El evento se solapa con otro ya existente del mismo tipo en ese horario',
-                'status' => 500,
-            ];
-            return response()->json($data, 500);
-        }
-
-        // Crear el evento si no hay solapamiento
         $evento = Eventos::create([
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
@@ -104,7 +59,7 @@ class EventosController extends Controller
             'hora_inicio' => $request->hora_inicio,
             'hora_fin' => $hora_fin,
             'cupo_maximo' => $request->cupo_maximo,
-            'cupo_actual' => $request->cupo_actual,
+            'cupo_actual' => $request->cupo_actual ?? [],
         ]);
 
         $data = [
@@ -115,67 +70,40 @@ class EventosController extends Controller
         return response()->json($data, 200);
     }
 
-    public function updateCupoActual(Request $request, $id){
-        $evento = Eventos::find($id);
+    public function updateCupoActual(EventosRequest $request, $id)
+    {
+        $evento = Eventos::findOrFail($id);
 
-        if(!$evento){
-
-            $data = [
-                'mensaje' => 'Evento no encontrado',
-                'status' => 404,
-            ];
-            return response()->json($data, 404);
-        }
-
-
-        $validacion = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
-        ]);
-
-        if ($validacion->fails()) {
-            $data = [
-                'mensaje' => 'Error en la validacion',
-                'error' => $validacion->errors(),
-                'status' => 400,
-            ];
-            return response()->json($data, 400);
-        }
 
         if (in_array($request->user_id, $evento->cupo_actual)) {
-            $data = [
-                'mensaje' => 'Ya esta registrado en este evento',
-                'status' => 500,
-            ];
-            return response()->json($data, 500);
+            return response()->json([
+                'mensaje' => 'Ya estás registrado en este evento',
+                'status' => 400,
+            ], 400);
         }
 
-        if (count($evento->cupo_actual) < $evento->cupo_maximo) {
 
-            $evento->cupo_actual = array_merge($evento->cupo_actual, [$request->user_id]);
-            $evento->save();
-
-            $data = [
-                'mensaje' => 'Usuario inscrito correctamente',
-                'status' => 200,
-            ];
-            return response()->json($data, 200);
-
-        } else {
-            $data = [
-                'mensaje' => 'El evento esta completo',
-                'status' => 500,
-            ];
-            return response()->json($data, 500);
+        if (count($evento->cupo_actual) >= $evento->cupo_maximo) {
+            return response()->json([
+                'mensaje' => 'El evento está completo',
+                'status' => 400,
+            ], 400);
         }
+
+
+        return response()->json([
+            'mensaje' => 'Inscripción posible',
+            'status' => 200,
+        ], 200);
     }
 
-    public function destroy($id){
-
+    public function destroy($id)
+    {
         $evento = Eventos::find($id);
 
         if(!$evento){
             $data = [
-                'mensaje' => 'No se ha podido obtener ponente',
+                'mensaje' => 'No se ha podido obtener el evento',
                 'status' => 404
             ];
             return response()->json($data, 404);
@@ -183,8 +111,8 @@ class EventosController extends Controller
         $evento->delete();
 
         $data = [
-            'mensaje' => 'Ponente eliminado correctamente',
-            'ponente' => $evento,
+            'mensaje' => 'Evento eliminado correctamente',
+            'evento' => $evento,
             'status' => 200
         ];
         return response()->json($data, 200);

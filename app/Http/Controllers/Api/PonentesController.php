@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PonentesRequest;
 use App\Models\Ponentes;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class PonentesController extends Controller
 {
-
     public function index(){
+
         $ponentes = Ponentes::all();
 
         if($ponentes->isEmpty()){
@@ -26,34 +26,17 @@ class PonentesController extends Controller
             'status' => 200
         ];
         return response()->json($data, 200);
-
     }
 
-    public function store(Request $request){
-
-
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'required|string|min:3|max:100',
-            'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'areas_experiencia' => 'required|string|min:3|max:255',
-            'redes_sociales' => 'required|string|min:5|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'mensaje' => 'Error en los datos enviados',
-                'errores' => $validator->errors()
-            ], 400);
-        }
-
-        // Subir la imagen a la carpeta public/img
+    public function store(PonentesRequest $request){
         $fotografia = $request->file('fotografia');
 
-        // Generar un nombre único para la imagen y moverla al directorio public/img
-        $fotografiaPath = 'img/' . uniqid('', true) . '.' . $fotografia->getClientOriginalExtension();
-        $fotografia->move(public_path('img'), $fotografiaPath);
+        if($fotografia->isValid()){
+            $fotografiaExtension = $fotografia->getClientOriginalExtension();
+            $fotografiaNombre = uniqid('', true) . '_' . time() . '.' . $fotografiaExtension;
+            $fotografiaPath = $request->file('fotografia')->storeAs('ponentes', $fotografiaNombre, 'public');
+        }
 
-        // Crear el ponente
         $ponente = Ponentes::create([
             'nombre' => $request->nombre,
             'fotografia' => $fotografiaPath,
@@ -69,9 +52,7 @@ class PonentesController extends Controller
         return response()->json($data, 200);
     }
 
-
     public function show($id){
-
         $ponente = Ponentes::find($id);
 
         if(!$ponente){
@@ -89,9 +70,10 @@ class PonentesController extends Controller
         return response()->json($data, 200);
     }
 
-    public function update(Request $request, $id){
-        // Buscar el ponente
+    public function update(PonentesRequest $request, $id){
         $ponente = Ponentes::find($id);
+
+
         if (!$ponente) {
             $data = [
                 'mensaje' => 'No se ha podido obtener ponente',
@@ -100,43 +82,22 @@ class PonentesController extends Controller
             return response()->json($data, 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'required|string|min:3|max:100',
-            'fotografia' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'areas_experiencia' => 'required|string|min:3|max:255',
-            'redes_sociales' => 'required|string|min:5|max:255',
-        ]);
-
-        // Validación fallida
-        if ($validator->fails()) {
-            $data = [
-                'mensaje' => 'Error en la validacion',
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
-
-        // Actualizar los datos del ponente
         $ponente->nombre = $request->nombre;
         $ponente->areas_experiencia = $request->areas_experiencia;
         $ponente->redes_sociales = $request->redes_sociales;
 
-        // Manejo de la fotografía (si se envía un nuevo archivo)
         if ($request->hasFile('fotografia')) {
-            // Eliminar la fotografía anterior si existe
-            if ($ponente->fotografia && file_exists(public_path('img/' . $ponente->fotografia))) {
-                unlink(public_path('img/' . $ponente->fotografia));
+            if ($ponente->fotografia) {
+                Storage::disk('public')->delete($ponente->fotografia);
             }
 
-            // Subir la nueva fotografía
             $fotografia = $request->file('fotografia');
-            $fotografiaPath = 'img/' . uniqid('', true) . '.' . $fotografia->getClientOriginalExtension();
-            $fotografia->move(public_path('img'), $fotografiaPath);
+            $fotografiaExtension = $fotografia->getClientOriginalExtension();
+            $fotografiaNombre = uniqid('', true) . '_' . time() . '.' . $fotografiaExtension;
+            $fotografiaPath = $fotografia->storeAs('ponentes', $fotografiaNombre, 'public');
 
-            // Asignar la nueva fotografía al ponente
             $ponente->fotografia = $fotografiaPath;
         }
-
 
         $ponente->save();
 
@@ -147,7 +108,6 @@ class PonentesController extends Controller
         ];
 
         return response()->json($data, 200);
-
     }
 
     public function destroy($id){
@@ -160,6 +120,7 @@ class PonentesController extends Controller
             ];
             return response()->json($data, 404);
         }
+
         $ponente->delete();
 
         $data = [
@@ -169,5 +130,4 @@ class PonentesController extends Controller
         ];
         return response()->json($data, 200);
     }
-
 }

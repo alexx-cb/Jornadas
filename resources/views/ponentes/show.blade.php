@@ -33,24 +33,24 @@
                         container.innerHTML = '';
 
                         data.ponentes.forEach(ponente => {
-                            const imageUrl = `/${ponente.fotografia.replace(/\\/g, '/')}`;
+                            const imageUrl = `/storage/${ponente.fotografia}`;
                             let card = `
-                                <div class="bg-white rounded-xl shadow-lg p-15 w-full max-w-md mx-auto transform transition duration-500 hover:scale-105">
-                                    <div class="flex flex-col items-center">
-                                        <img src="${imageUrl}" alt="${ponente.nombre}" class="w-48 h-48 object-cover rounded-full border-4 border-gray-200 shadow-md">
-                                        <h3 class="text-2xl font-semibold mt-6 text-gray-800">${ponente.nombre}</h3>
-                                        <p class="text-gray-600 mt-3 text-center px-6">Áreas de experiencia: <span class="font-medium">${ponente.areas_experiencia}</span></p>
-                                        <a href="${ponente.redes_sociales}" target="_blank" class="text-blue-500 hover:underline mt-4 text-lg">🔗 Redes Sociales</a>
-                                        <p class="text-gray-500 text-sm mt-3">📅 Registrado: ${new Date(ponente.created_at).toLocaleDateString()}</p>
-                                        <div class="flex gap-2 mt-4">
-                                            ${window.isAdmin ? `
-                                                <a href="/ponentes/${ponente.id}/editar" class="bg-green-500 text-black py-2 px-4 rounded-md hover:bg-green-600">Editar</a>
-                                                <button onclick="eliminarPonente(${ponente.id})" class="bg-red-500 text-black py-2 px-4 rounded-md hover:bg-red-600">Eliminar</button>
-                                            ` : ''}
-                                        </div>
-                                    </div>
+                        <div class="bg-white rounded-xl shadow-lg p-15 w-full max-w-md mx-auto transform transition duration-500 hover:scale-105">
+                            <div class="flex flex-col items-center">
+                                <img src="${imageUrl}" alt="${ponente.nombre}" class="w-48 h-48 object-cover rounded-full border-4 border-gray-200 shadow-md">
+                                <h3 class="text-2xl font-semibold mt-6 text-gray-800">${ponente.nombre}</h3>
+                                <p class="text-gray-600 mt-3 text-center px-6">Áreas de experiencia: <span class="font-medium">${ponente.areas_experiencia}</span></p>
+                                <a href="${ponente.redes_sociales}" target="_blank" class="text-blue-500 hover:underline mt-4 text-lg">🔗 Redes Sociales</a>
+                                <p class="text-gray-500 text-sm mt-3">📅 Registrado: ${new Date(ponente.created_at).toLocaleDateString()}</p>
+                                <div class="flex gap-2 mt-4">
+                                    ${window.isAdmin ? `
+                                        <a href="/ponentes/${ponente.id}/editar" class="bg-green-500 text-black py-2 px-4 rounded-md hover:bg-green-600">Editar</a>
+                                        <button onclick="eliminarPonente(${ponente.id})" class="bg-red-500 text-black py-2 px-4 rounded-md hover:bg-red-600">Eliminar</button>
+                                    ` : ''}
                                 </div>
-                            `;
+                            </div>
+                        </div>
+                    `;
                             container.innerHTML += card;
                         });
                     }

@@ -146,20 +146,29 @@
                 },
                 body: JSON.stringify(datos)
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 400) {
-                        console.error("Errores de validación:", data.errores);
-                        alert("Error en la validación. Revisa los campos.");
-                    } else {
-                        alert(data.mensaje);
-                        window.location.href = "/eventos";
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => Promise.reject(err));
                     }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.mensaje);
+                    window.location.href = "/eventos";
                 })
                 .catch(error => {
-                    console.error("Error en la solicitud:", error);
-                    alert("Error de conexión con la API");
+                    if (error.errors) {
+                        let errorMessage = "Errores de validación:\n";
+                        for (let field in error.errors) {
+                            errorMessage += `${field}: ${error.errors[field].join(', ')}\n`;
+                        }
+                        alert(errorMessage);
+                    } else {
+                        console.error("Error en la solicitud:", error);
+                        alert("Error de conexión con la API");
+                    }
                 });
         }
+
     </script>
 </x-app-layout>

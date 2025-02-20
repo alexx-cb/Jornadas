@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EstudiantesRequest;
 use App\Models\Estudiantes;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class EstudiantesController extends Controller
 {
@@ -28,18 +27,7 @@ class EstudiantesController extends Controller
         return response()->json($data, 200);
     }
 
-    public function store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255|unique:estudiantes',
-        ]);
-
-        if ($validator->fails()) {
-            $data = [
-                'mensaje' => 'Error en la validacion',
-                'status' => 200
-            ];
-            return response()->json($data, 200);
-        }
+    public function store(EstudiantesRequest $request){
 
         $estudiante = Estudiantes::create([
             'email' => $request->input('email'),
@@ -47,18 +35,18 @@ class EstudiantesController extends Controller
 
         if(!$estudiante){
             $data = [
-                'mensaje' => 'No se ha podido crear el estudiante',
-                'status' => 500
+                'mensaje' => 'Error al crear estudiante',
+                'status' => 400
             ];
-            return response()->json($data, 500);
+            return response()->json($data, 400);
         }
+
         $data = [
-            'mensaje' => 'Se ha creado un nuevo estudiante',
+            'mensaje' => 'Estudiante creado correctamente',
             'estudiante' => $estudiante,
             'status' => 200
         ];
         return response()->json($data, 200);
-
     }
 
     public function show($id){
@@ -78,7 +66,8 @@ class EstudiantesController extends Controller
         return response()->json($data, 200);
     }
 
-    public function update(Request $request, $id){
+    public function update(EstudiantesRequest $request, $id){
+
         $estudiante = Estudiantes::find($id);
 
         if(!$estudiante){
@@ -89,23 +78,11 @@ class EstudiantesController extends Controller
             return response()->json($data, 404);
         }
 
-        $validator = Validator::make($request->all(), [
-           'email' => 'required|string|email|max:255|unique:estudiantes',
-        ]);
-
-        if ($validator->fails()) {
-            $data = [
-                'mensaje' => 'Error en la validacion',
-                'status' => 200
-            ];
-            return response()->json($data, 200);
-        }
-
         $estudiante->email = $request->input('email');
         $estudiante->save();
 
         $data = [
-            'mensaje' => 'Se ha actualizado el estudiante',
+            'mensaje' => 'Estudiante actualizado correctamente',
             'estudiante' => $estudiante,
             'status' => 200
         ];
@@ -113,9 +90,10 @@ class EstudiantesController extends Controller
     }
 
     public function destroy($id){
+
         $estudiante = Estudiantes::find($id);
 
-        if (!$estudiante) {
+        if(!$estudiante){
             $data = [
                 'mensaje' => 'No se ha podido obtener el estudiante',
                 'status' => 404
@@ -126,7 +104,7 @@ class EstudiantesController extends Controller
         $estudiante->delete();
 
         $data = [
-            'mensaje' => 'Se ha eliminado el estudiante',
+            'mensaje' => 'Estudiante eliminado correctamente',
             'status' => 200
         ];
         return response()->json($data, 200);

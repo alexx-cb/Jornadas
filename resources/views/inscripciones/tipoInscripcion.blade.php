@@ -13,14 +13,12 @@
                 <form id="updateForm">
                     @csrf
 
-
                     <label for="tipo_inscripcion" class="block text-sm font-medium text-gray-700">Tipo de Inscripción:</label>
                     <select id="tipo_inscripcion" name="tipo_inscripcion" class="mt-1 p-2 border border-gray-300 rounded w-full">
                         <option value="1">Presencial</option>
                         <option value="2">Virtual</option>
                         <option value="3">Gratuito</option>
                     </select>
-
 
                     <div class="mt-4">
                         <span class="text-sm font-medium text-gray-700">¿Eres estudiante?</span>
@@ -32,12 +30,9 @@
                         </label>
                     </div>
 
-
                     <p id="errorMensaje" class="text-red-500 text-sm mt-2 hidden">No puedes seleccionar "Gratuito" o "Estudiante" si tu email no está registrado.</p>
 
-                    <div id="paypal-button-container">
-
-                    </div>
+                    <div id="paypal-button-container"></div>
 
                     <button type="submit" class="mt-6 bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600">
                         Actualizar
@@ -99,8 +94,18 @@
                 },
                 createOrder: function (data, actions) {
                     if (precioActual === 0) {
-                        alert("No es necesario pagar. La inscripción gratuita se actualizará automáticamente.");
                         pagoRealizado = true;
+                        alert("No es necesario pagar. La inscripción gratuita se actualizará automáticamente.");
+
+                        pagoData = {
+                            user_id: userId,
+                            tipo_pago: "Gratuito",
+                            cantidad: 0,
+                            fecha_pago: new Date().toISOString().slice(0, 19).replace("T", " "),
+                            estado: "Pagado"
+                        };
+
+                        enviarPagoAPI(pagoData);
                         return;
                     }
                     return actions.order.create({
@@ -167,6 +172,11 @@
             const esEstudiante = listaEstudiantes.includes(userEmail);
             const errorMensaje = document.getElementById("errorMensaje");
 
+            if (!estudianteSeleccionado && selectedTipoInscripcion === "3") {
+                alert("No puedes seleccionar la inscripción gratuita si no eres estudiante.");
+                return;
+            }
+
             if (estudianteSeleccionado && !esEstudiante) {
                 errorMensaje.classList.remove("hidden");
                 alert("No puedes seleccionar 'Estudiante' si tu email no está registrado.");
@@ -204,8 +214,5 @@
         }
 
         renderizarBotonPaypal();
-
     </script>
-
-
 </x-app-layout>

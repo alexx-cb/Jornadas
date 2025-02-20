@@ -98,8 +98,7 @@
             }
 
             try {
-                // Actualizar cupo actual
-                let cupoResponse = await fetch(`http://localhost:8000/api/eventos/${eventoId}`, {
+                let verificacionResponse = await fetch(`http://localhost:8000/api/eventos/${eventoId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -107,26 +106,30 @@
                     body: JSON.stringify({ user_id: window.userId })
                 });
 
-                let cupoData = await cupoResponse.json();
-                if (cupoData.status !== 200) {
-                    alert(cupoData.mensaje || "Error al inscribirse.");
+                let verificacionData = await verificacionResponse.json();
+                if (verificacionData.status !== 200) {
+                    alert(verificacionData.mensaje || "No es posible inscribirse en este evento.");
                     return;
                 }
 
-                let userCaracteristicasResponse = await fetch(`http://localhost:8000/api/usuarioCaracteristicas/${window.userId}`, {
+                // Realizar la inscripción
+                let inscripcionResponse = await fetch(`http://localhost:8000/api/usuarioCaracteristicas/${window.userId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ tipo: tipoEvento.toLowerCase() })
+                    body: JSON.stringify({
+                        tipo: tipoEvento.toLowerCase(),
+                        evento_id: eventoId
+                    })
                 });
 
-                let userCaracteristicasData = await userCaracteristicasResponse.json();
-                if (userCaracteristicasData.status !== 200) {
-                    alert(userCaracteristicasData.mensaje || "Error al actualizar tu perfil.");
+                let inscripcionData = await inscripcionResponse.json();
+                if (inscripcionData.status !== 200) {
+                    alert(inscripcionData.mensaje || "Error al inscribirse.");
                     return;
                 }
-                window.location.reload();
+
                 alert("Inscripción completada correctamente.");
                 window.location.reload();
             } catch (error) {
