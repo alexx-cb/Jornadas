@@ -108,6 +108,15 @@ class EventosController extends Controller
             ];
             return response()->json($data, 404);
         }
+
+        if ($evento->cupo_actual->count() > 0) {
+            $data = [
+                'mensaje' => 'No se puede eliminar el evento si hay usuarios registrados',
+                'status' => 400,
+            ];
+            return response()->json($data, 400);
+        }
+
         $evento->delete();
 
         $data = [
