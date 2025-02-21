@@ -80,7 +80,7 @@
                         <p class="text-gray-600">👥 Cupo: ${evento.cupo_actual.length} / ${evento.cupo_maximo}</p>
                         <div class="flex gap-2 mt-4">
                             ${window.isAdmin ? `
-                                <button onclick="eliminarEvento(${evento.id})" class="bg-red-500 text-black py-2 px-4 rounded-md hover:bg-red-600">Eliminar</button>
+                                <button onclick="eliminarEvento(${evento.id}, ${evento.cupo_actual.length})" class="bg-red-500 text-black py-2 px-4 rounded-md hover:bg-red-600">Eliminar</button>
                             ` : `
                                 <button onclick="inscribirseEvento(${evento.id}, '${evento.tipo_evento}')" class="bg-green-500 text-black py-2 px-4 rounded-md hover:bg-green-600">Inscribirse</button>
                             `}
@@ -134,11 +134,16 @@
                 window.location.reload();
             } catch (error) {
                 console.error("Error al inscribirse:", error);
-                alert("Error de conexión con la API.");
+                alert("No te puedes inscribir en mas eventos del tipo: " + tipoEvento);
             }
         }
 
-        function eliminarEvento(id) {
+        function eliminarEvento(id, cupoActual) {
+            if (cupoActual > 0) {
+                alert('No se puede eliminar el evento porque aún tiene participantes inscritos.');
+                return;
+            }
+
             if (confirm('¿Estás seguro de que deseas eliminar este evento?')) {
                 fetch(`http://localhost:8000/api/eventos/${id}`, {
                     method: 'DELETE',
